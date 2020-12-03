@@ -25,9 +25,12 @@ import torchvision.models as models
 from my_loss_function import loss_label_smoothing, loss_kd_regularization, loss_kd, loss_kd_self
 from train_kd import train_and_evaluate, train_and_evaluate_kd
 
+from live import LiveModel
+from datalmdb import DataLmdb
+
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_dir', default='experiments/base_experiments/base_resnet18/', help="Directory containing params.json")
+parser.add_argument('--model_dir', default='experiments/kd_experiments/spoof_distill/spoof_self_teacher', help="Directory containing params.json")
 parser.add_argument('--restore_file', default=None, help="Optional, name of the file in --model_dir \
                     containing weights to reload before training")  # 'best' or 'train'
 parser.add_argument('--num_class', default=100, type=int, help="number of classes")
@@ -35,7 +38,7 @@ parser.add_argument('-warm', type=int, default=1, help='warm up training phase')
 parser.add_argument('--regularization', action='store_true', default=False, help="flag for regulization")
 parser.add_argument('--label_smoothing', action='store_true', default=False, help="flag for label smoothing")
 parser.add_argument('--double_training', action='store_true', default=False, help="flag for double training")
-parser.add_argument('--self_training', action='store_true', default=False, help="flag for self training")
+parser.add_argument('--self_training', action='store_true', default=True, help="flag for self training")
 parser.add_argument('--pt_teacher', action='store_true', default=False, help="flag for Defective KD")
 
 
@@ -59,13 +62,19 @@ def main():
     # Create the input data pipeline
     logging.info("Loading the datasets...")
 
+    '''
     # fetch dataloaders, considering full-set vs. sub-set scenarios
     if params.subset_percent < 1.0:
         train_dl = data_loader.fetch_subset_dataloader('train', params)
     else:
         train_dl = data_loader.fetch_dataloader('train', params)
 
-    dev_dl = data_loader.fetch_dataloader('dev', params)
+    dev_dl = data_loader.fetch_dataloader('dev', params)'''
+
+    train_dl = torch.utils.data.DataLoader(DataLmdb("/kaggle/working/Fake/train", db_size=87690, crop_size=128, flip=True, scale=0.00390625),
+        batch_size=128, shuffle=True)
+    dev_dl = torch.utils.data.DataLoader(DataLmdb("/kaggle/working/Fake/valid", db_size=28332, crop_size=128, flip=False, scale=0.00390625, random=False),
+        batch_size=128, shuffle=False)
 
     logging.info("- done.")
 
@@ -114,6 +123,9 @@ def main():
         elif params.model_version == "densenet121_distill":
             print("Student model: {}".format(params.model_version))
             model = densenet.densenet121(num_class=args.num_class).cuda()
+
+        elif params.model_version == "spoof_distill":
+            model = LiveModel('live_tof.npy').cuda()
 
         # optimizer
         if params.model_version == "cnn_distill":
@@ -200,8 +212,13 @@ def main():
             print("Teacher model: {}".format(params.teacher))
             teacher_model = shufflenet.shufflenetv2(class_num=args.num_class).cuda()
             teacher_checkpoint = 'experiments/pretrained_teacher_models/base_shufflenet_v2/best.pth.tar'
+        
+        elif params.teacher == "spoof":
+            print("Teacher model: {}".format(params.teacher))
+            teacher_model = LiveModel('live_tof.npy').cuda()
 
-        utils.load_checkpoint(teacher_checkpoint, teacher_model)
+        if params.teacher != "spoof":
+            utils.load_checkpoint(teacher_checkpoint, teacher_model)
 
         # Train the model with KD
         logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
