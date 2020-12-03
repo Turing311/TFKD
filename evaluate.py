@@ -33,7 +33,7 @@ def evaluate(model, loss_fn, dataloader, params, args):
     # compute metrics over the dataset
     for data_batch, labels_batch in dataloader:
 
-        data_batch, labels_batch = data_batch.cuda(async=True), labels_batch.cuda(async=True)
+        data_batch, labels_batch = data_batch.cuda(), labels_batch.cuda()
 
         data_batch, labels_batch = Variable(data_batch), Variable(labels_batch)
         # compute model output
