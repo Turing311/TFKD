@@ -60,7 +60,7 @@ def main():
     utils.set_logger(os.path.join(args.model_dir, 'train.log'))
 
     # Create the input data pipeline
-    logging.info("Loading the datasets...")
+    print("Loading the datasets...")
 
     '''
     # fetch dataloaders, considering full-set vs. sub-set scenarios
@@ -76,7 +76,7 @@ def main():
     dev_dl = torch.utils.data.DataLoader(DataLmdb("/kaggle/working/Fake/valid", db_size=28332, crop_size=128, flip=False, scale=0.00390625, random=False),
         batch_size=128, shuffle=False)
 
-    logging.info("- done.")
+    print("- done.")
 
     """
     Load student and teacher model
@@ -221,7 +221,7 @@ def main():
             utils.load_checkpoint(teacher_checkpoint, teacher_model)
 
         # Train the model with KD
-        logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
+        print("Starting training for {} epoch(s)".format(params.num_epochs))
         train_and_evaluate_kd(model, teacher_model, train_dl, dev_dl, optimizer, loss_fn_kd,
                               warmup_scheduler, params, args, args.restore_file)
 
@@ -295,7 +295,7 @@ def main():
         warmup_scheduler = utils.WarmUpLR(optimizer, iter_per_epoch * args.warm)
 
         # Train the model
-        logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
+        print("Starting training for {} epoch(s)".format(params.num_epochs))
         train_and_evaluate(model, train_dl, dev_dl, optimizer, loss_fn, params,
                            args.model_dir, warmup_scheduler, args, args.restore_file)
 

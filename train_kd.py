@@ -18,7 +18,7 @@ def train_and_evaluate_kd(model, teacher_model, train_dataloader, val_dataloader
     # reload weights from restore_file if specified
     if restore_file is not None:
         restore_path = os.path.join(args.model_dir, args.restore_file + '.pth.tar')
-        logging.info("Restoring parameters from {}".format(restore_path))
+        print("Restoring parameters from {}".format(restore_path))
         utils.load_checkpoint(restore_path, model, optimizer)
 
     # tensorboard setting
@@ -35,7 +35,7 @@ def train_and_evaluate_kd(model, teacher_model, train_dataloader, val_dataloader
 
         if epoch > 0:   # 0 is the warm up epoch
             scheduler.step()
-        logging.info("Epoch {}/{}, lr:{}".format(epoch + 1, params.num_epochs, optimizer.param_groups[0]['lr']))
+        print("Epoch {}/{}, lr:{}".format(epoch + 1, params.num_epochs, optimizer.param_groups[0]['lr']))
 
         # KD Train
         train_acc, train_loss = train_kd(model, teacher_model, optimizer, loss_fn_kd, train_dataloader, warmup_scheduler, params, args, epoch)
@@ -54,7 +54,7 @@ def train_and_evaluate_kd(model, teacher_model, train_dataloader, val_dataloader
 
         # If best_eval, best_save_path
         if is_best:
-            logging.info("- Found new best accuracy")
+            print("- Found new best accuracy")
             best_val_acc = val_acc
 
             # Save best val metrics in a json file in the model directory
@@ -124,7 +124,7 @@ def train_kd(model, teacher_model, optimizer, loss_fn_kd, dataloader, warmup_sch
             t.update()
 
     acc = 100.*correct/total
-    logging.info("- Train accuracy: {acc:.4f}, training loss: {loss:.4f}".format(acc = acc, loss = losses.avg))
+    print("- Train accuracy: {acc:.4f}, training loss: {loss:.4f}".format(acc = acc, loss = losses.avg))
     return acc, losses.avg
 
 
@@ -137,7 +137,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer,
     # reload weights from restore_file if specified
     if restore_file is not None:
         restore_path = os.path.join(args.model_dir, args.restore_file + '.pth.tar')
-        logging.info("Restoring parameters from {}".format(restore_path))
+        print("Restoring parameters from {}".format(restore_path))
         utils.load_checkpoint(restore_path, model, optimizer)
 
     # dir setting, tensorboard events will save in the dirctory
@@ -160,7 +160,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer,
             scheduler.step(epoch)
 
         # Run one epoch
-        logging.info("Epoch {}/{}, lr:{}".format(epoch + 1, params.num_epochs, optimizer.param_groups[0]['lr']))
+        print("Epoch {}/{}, lr:{}".format(epoch + 1, params.num_epochs, optimizer.param_groups[0]['lr']))
 
         # compute number of batches in one epoch (one full pass over the training set)
         train_acc, train_loss = train(model, optimizer, loss_fn, train_dataloader, params, epoch, warmup_scheduler, args)
@@ -179,7 +179,7 @@ def train_and_evaluate(model, train_dataloader, val_dataloader, optimizer,
                                 checkpoint=model_dir)
         # If best_eval, best_save_path
         if is_best:
-            logging.info("- Found new best accuracy")
+            print("- Found new best accuracy")
             best_val_acc = val_acc
 
             # Save best val metrics in a json file in the model directory
@@ -241,7 +241,7 @@ def train(model, optimizer, loss_fn, dataloader, params, epoch, warmup_scheduler
             t.update()
 
     acc = 100. * correct / total
-    logging.info("- Train accuracy: {acc: .4f}, training loss: {loss: .4f}".format(acc=acc, loss=losses.avg))
+    print("- Train accuracy: {acc: .4f}, training loss: {loss: .4f}".format(acc=acc, loss=losses.avg))
     return acc, losses.avg
 
 

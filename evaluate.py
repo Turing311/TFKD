@@ -50,7 +50,7 @@ def evaluate(model, loss_fn, dataloader, params, args):
 
     loss_avg = losses.avg
     acc = 100.*correct/total
-    logging.info("- Eval metrics, acc:{acc:.4f}, loss: {loss_avg:.4f}".format(acc=acc, loss_avg=loss_avg))
+    print("- Eval metrics, acc:{acc:.4f}, loss: {loss_avg:.4f}".format(acc=acc, loss_avg=loss_avg))
     my_metric = {'accuracy': acc, 'loss': loss_avg}
     return my_metric
 
@@ -95,7 +95,7 @@ def evaluate_kd(model, dataloader, params):
         correct += predicted.eq(labels_batch).sum().item()
 
     acc = 100. * correct / total
-    logging.info("- Eval metrics, acc:{acc:.4f}, loss: {loss:.4f}".format(acc=acc, loss=loss))
+    print("- Eval metrics, acc:{acc:.4f}, loss: {loss:.4f}".format(acc=acc, loss=loss))
     my_metric = {'accuracy': acc, 'loss': loss}
     #my_metric['accuracy'] = acc
     return my_metric
