@@ -72,9 +72,9 @@ def main():
     dev_dl = data_loader.fetch_dataloader('dev', params)'''
 
     train_dl = torch.utils.data.DataLoader(DataLmdb("/kaggle/working/Fake/train", db_size=87690, crop_size=128, flip=True, scale=0.00390625),
-        batch_size=128, shuffle=True)
+        batch_size=256, shuffle=True)
     dev_dl = torch.utils.data.DataLoader(DataLmdb("/kaggle/working/Fake/valid", db_size=28332, crop_size=128, flip=False, scale=0.00390625, random=False),
-        batch_size=128, shuffle=False)
+        batch_size=256, shuffle=False)
 
     print("- done.")
 
@@ -128,7 +128,7 @@ def main():
             model = LiveModel('live_tof.npy').cuda()
 
         # optimizer
-        if params.model_version == "cnn_distill":
+        if params.model_version == "cnn_distill" or True:
             optimizer = optim.Adam(model.parameters(), lr=params.learning_rate * (params.batch_size / 128))
         else:
             optimizer = optim.SGD(model.parameters(), lr=params.learning_rate * (params.batch_size / 128), momentum=0.9,
