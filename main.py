@@ -128,11 +128,11 @@ def main():
             model = LiveModel('live_tof.npy').cuda()
 
         # optimizer
-        if params.model_version == "cnn_distill" or True:
+        if params.model_version == "cnn_distill":
             optimizer = optim.Adam(model.parameters(), lr=params.learning_rate * (params.batch_size / 128))
         else:
             optimizer = optim.SGD(model.parameters(), lr=params.learning_rate * (params.batch_size / 128), momentum=0.9,
-                                  weight_decay=5e-4)
+                                  weight_decay=2e-4)
 
         iter_per_epoch = len(train_dl)
         warmup_scheduler = utils.WarmUpLR(optimizer,
