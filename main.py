@@ -31,7 +31,7 @@ from datalmdb import DataLmdb
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--model_dir', default='experiments/kd_experiments/spoof_distill/spoof_self_teacher', help="Directory containing params.json")
-parser.add_argument('--restore_file', default=None, help="Optional, name of the file in --model_dir \
+parser.add_argument('--restore_file', default='last', help="Optional, name of the file in --model_dir \
                     containing weights to reload before training")  # 'best' or 'train'
 parser.add_argument('--num_class', default=100, type=int, help="number of classes")
 parser.add_argument('-warm', type=int, default=1, help='warm up training phase')
